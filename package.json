@@ -1,4 +1,10 @@
 {
+  "name": "text-overlay-generator",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/lumastar/text-overlay-generator.git",
+  "license": "MIT",
+  "private": true,
   "dependencies": {
     "await-spawn": "^3.0.0",
     "body-parser": "^1.19.0",
