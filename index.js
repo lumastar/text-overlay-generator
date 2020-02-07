@@ -9,18 +9,33 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 app.post('/generate', async (req, res) => {
-    const txt = req.body.content || ''
+    const line1 = req.body.line1 || ''
+    const line2 = req.body.line2 || ''
 
-    if (txt.length === 0) {
+    if (line1.length === 0 && line2.length === 0) {
         res.status(422).send('text too short')
     } else {
         try {
-            console.log(`running generate with "${txt}"`)
-            await spawn('./generate.sh', [ txt ])
+            console.log(`running generate with "${line1}"-"${line2}"`)
+            const r = await spawn('./generate.sh', [ line1, line2 ])
+            console.log('generated', r)
             res.send('done')
         } catch (e) {
-            res.send('failed to generate')
+            console.log('generate failed: ', e.stderr.toString())
+            res.status(500).send('failed to generate')
         }
+    }
+})
+
+app.post('/upload', async (req, res) => {
+    try {
+        console.log(`running upload`)
+        const r = await spawn('./upload.sh')
+        console.log('uploaded', r)
+        res.send('done')
+    } catch (e) {
+        console.log('upload failed: ', e.stderr.toString())
+        res.status(500).send('failed to generate')
     }
 })
 

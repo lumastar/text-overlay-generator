@@ -15,8 +15,14 @@
     <body>
 
         <p>
-            <input type="text" id="input_field" />
+            Line1: <input type="text" id="input_field1" />
+        </p>
+        <p>
+            Line2: <input type="text" id="input_field2" />
+        </p>
+        <p>
             <button onclick="sendGenerate()">Generate</button>
+            <button onclick="sendUpload()">Upload</button>
         </p>
 
         <p>
@@ -25,13 +31,15 @@
 
         <script type="text/javascript">
             function sendGenerate() {
-                const value = document.querySelector('#input_field').value
-                console.log('sending', value)
+                const line1 = document.querySelector('#input_field1').value
+                const line2 = document.querySelector('#input_field2').value
+                console.log('sending', line1, line2)
 
                 fetch('/generate', {
                     method: 'POST',
                     body: JSON.stringify({
-                        content: value
+                        line1,
+                        line2
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -40,9 +48,23 @@
                     if (r.status !== 200) {
                         const str = await r.text()
                         console.log('error', str)
-                        alert(`failed: ${str}`)
+                        alert(`generate failed: ${str}`)
                     }
                     document.querySelector('#preview_img').src = `/output.png?${Date.now()}`
+                })
+            }
+
+            function sendUpload() {
+                fetch('/upload', {
+                    method: 'POST'
+                }).then(async (r) => {
+                    if (r.status !== 200) {
+                        const str = await r.text()
+                        console.log('error', str)
+                        alert(`upload failed: ${str}`)
+                    } else {
+                        alert('uploaded')
+                    }
                 })
             }
         </script>
