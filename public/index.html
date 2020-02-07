@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>Text PNG Generator</title>
+
+        <style>
+            #preview_img {
+                background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%);
+                background-color: #505050;
+                background-size: 20px 20px;
+                background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <p>
+            <input type="text" id="input_field" />
+            <button onclick="sendGenerate()">Generate</button>
+        </p>
+
+        <p>
+            <img width="1024" height="576" id="preview_img" src="/output.png" />
+        </p>
+
+        <script type="text/javascript">
+            function sendGenerate() {
+                const value = document.querySelector('#input_field').value
+                console.log('sending', value)
+
+                fetch('/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        content: value
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(async (r) => {
+                    if (r.status !== 200) {
+                        const str = await r.text()
+                        console.log('error', str)
+                        alert(`failed: ${str}`)
+                    }
+                    document.querySelector('#preview_img').src = `/output.png?${Date.now()}`
+                })
+            }
+        </script>
+    </body>
+</html>
