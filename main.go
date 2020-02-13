@@ -2,13 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
 )
 
-const imagePath = "output.png"
+// const imagePath = "output.png"
 
 type generateBody struct {
 	Line1 string
@@ -16,6 +17,10 @@ type generateBody struct {
 }
 
 func main() {
+	imagePath := flag.String("imagePath", "output.png", "where the image is generated to")
+	port := flag.Int("port", 3000, "port number to serve on")
+
+	flag.Parse()
 
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
@@ -26,8 +31,7 @@ func main() {
 			return
 		}
 
-		// TODO - result of this might be being cached?
-		http.ServeFile(w, r, imagePath)
+		http.ServeFile(w, r, *imagePath)
 	})
 
 	http.HandleFunc("/generate", func(w http.ResponseWriter, r *http.Request) {
@@ -93,6 +97,6 @@ func main() {
 		}
 	})
 
-	fmt.Println("Starting server")
-	http.ListenAndServe(":8080", nil)
+	fmt.Printf("Starting server on port %d\n", *port)
+	http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 }
